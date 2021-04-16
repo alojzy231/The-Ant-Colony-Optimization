@@ -1,0 +1,26 @@
+*{
+    margin: 2px;
+}
+
+#inputs{
+    margin: 5px;
+}
+
+
+ul{
+    display: flex;
+}
+li{
+    list-style: none;
+    padding: 5px;
+    background-color: rgb(240, 61, 61);
+}
+
+li:hover{
+    background-color: rgb(238, 89, 89);
+    cursor: pointer;
+}
+
+.pressed{
+    background-color: rgb(201, 66, 66);
+}
