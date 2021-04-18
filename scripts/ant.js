@@ -60,6 +60,9 @@ export default class Ant{
             this.checkForFoodPheronomes();
         }
 
+        this.checkForFood();
+        this.checkForHome();
+
         this.randomAngle(this.dir.x, this.dir.y, this.currentAngleOffset);
         this.dir = this.normalize(this.dir.x, this.dir.y);
         this.posX += this.dir.x * this.speed;
@@ -80,8 +83,7 @@ export default class Ant{
             this.countingMoves++;
         }
 
-        this.checkForFood();
-        this.checkForHome();
+        
     }
 
     withinAngle(v1, v2, angle){
@@ -93,7 +95,8 @@ export default class Ant{
     }
 
     checkForFood(){
-        for(let index = 0; index < foodSources.length; index++){
+        if(!this.carryingFood){
+            for(let index = 0; index < foodSources.length; index++){
             let target = this.normalize(foodSources[index].posX - this.posX, foodSources[index].posY - this.posY);
             if(foodSources[index].radius * foodSources[index].radius >= this.distance(this.posX, this.posY,foodSources[index].posX, foodSources[index].posY) && this.canBounce){
                     this.carryingFood = true;
@@ -102,19 +105,23 @@ export default class Ant{
                     this.canBounce = false;
             }else if(foodSources[index].radius * foodSources[index].radius < this.distance(this.posX, this.posY,foodSources[index].posX, foodSources[index].posY) && !this.canBounce){
                 this.canBounce = true;
+                }
             }
         }
     }
 
     checkForHome(){
-        if(base.radius * base.radius >= this.distance(base.posX, base.posY, this.posX, this.posY) && this.canBounce){
-            this.carryingFood = false;
-            this.dir.x *= -1;
-            this.dir.y *= -1;
-            this.canBounce = false;
-        }else if((base.radius * base.radius < this.distance(base.posX, base.posY, this.posX, this.posY) && !this.canBounce)){
-            this.canBounce = true;
-        }
+        if(this.carryingFood){
+            if(base.radius * base.radius >= this.distance(base.posX, base.posY, this.posX, this.posY) && this.canBounce){
+                this.carryingFood = false;
+                this.dir.x *= -1;
+                this.dir.y *= -1;
+                this.canBounce = false;
+            }else if((base.radius * base.radius < this.distance(base.posX, base.posY, this.posX, this.posY) && !this.canBounce)){
+                this.canBounce = true;
+            }
+        }  
+        
     }
 
     checkForFoodPheronomes(){
