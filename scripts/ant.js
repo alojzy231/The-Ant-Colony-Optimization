@@ -19,7 +19,7 @@ export default class Ant{
         this.fieldOfView = 100;
         this.seeingTrailDst = 150;
 
-        this.angleWhenFoundTrailOffset = 75;
+        this.angleWhenFoundTrailOffset = 100;
         this.angleWhenLookingForTrailOffset = 100;
         this.currentAngleOffset = this.angleWhenLookingForTrailOffset;
         
