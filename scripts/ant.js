@@ -16,11 +16,10 @@ export default class Ant{
         this.countingMoves = 0;
         this.movesBetweenTrails = 7;
 
-        this.angleOfView = 90;
-        this.fieldOfView = 100;
-        this.seeingTrailDst = 150;
+        this.angleOfView = 120;
+        this.seeingDistance = 90;
 
-        this.angleWhenFoundTrailOffset = 100;
+        this.angleWhenFoundTrailOffset = 75;
         this.angleWhenLookingForTrailOffset = 100;
         this.currentAngleOffset = this.angleWhenLookingForTrailOffset;
         
@@ -32,6 +31,8 @@ export default class Ant{
             posY: baseY,
         }
         this.baseRadius = radius;
+
+        this.distanceToObstacle = 3;
     }
 
     normalize(_x,_y){
@@ -62,9 +63,9 @@ export default class Ant{
 
     move(indexOfBase){
         if(this.carryingFood){
-            this.checkForHomePheronomes();
+            this.checkForHomePheronomes(indexOfBase);
         }else{
-            this.checkForFoodPheronomes();
+            this.checkForFoodPheronomes(indexOfBase);
         }
 
         this.checkForFood();
@@ -72,6 +73,9 @@ export default class Ant{
 
         this.randomAngle(this.dir.x, this.dir.y, this.currentAngleOffset);
         this.dir = this.normalize(this.dir.x, this.dir.y);
+
+        this.checkForObstacle();
+
         this.posX += this.dir.x * this.speed;
         this.posY += this.dir.y * this.speed;
 
@@ -104,7 +108,6 @@ export default class Ant{
     checkForFood(){
         if(!this.carryingFood){
             for(let index = 0; index < foodSources.length; index++){
-            // let target = this.normalize(foodSources[index].posX - this.posX, foodSources[index].posY - this.posY);
             if(foodSources[index].radius * foodSources[index].radius >= this.distance(this.posX, this.posY,foodSources[index].posX, foodSources[index].posY) && this.canBounce){
                     this.carryingFood = true;
                     this.dir.x *= -1;
@@ -131,17 +134,19 @@ export default class Ant{
         
     }
 
-    checkForFoodPheronomes(){
+    checkForFoodPheronomes(indexOfBase){
         if(!this.carryingFood){
             for(let index = 0; index < foodSources.length; index++){
                 let target = this.normalize(foodSources[index].posX - this.posX, foodSources[index].posY - this.posY);
-                if(this.fieldOfView * this.fieldOfView >= this.distance(foodSources[index].posX, foodSources[index].posY, this.posX, this.posY) && this.withinAngle(this.dir, target, this.angleOfView / 2)){
-                    this.dir.x = foodSources[index].posX - this.posX;
-                    this.dir.y = foodSources[index].posY - this.posY;
+                if(this.seeingDistance * this.seeingDistance >= this.distance(foodSources[index].posX, foodSources[index].posY, this.posX, this.posY) && this.withinAngle(this.dir, target, this.angleOfView / 2)){
+                    if(!this.checkIfBlockedVision(target)){
+                        this.dir.x = foodSources[index].posX - this.posX;
+                        this.dir.y = foodSources[index].posY - this.posY;
 
-                    this.dir = this.normalize(this.dir.x, this.dir.y);
-                    this.busy = true;
-                    break;
+                        this.dir = this.normalize(this.dir.x, this.dir.y);
+                        this.busy = true;
+                        break;
+                    }
                 }
             }
             if(!this.busy){
@@ -149,16 +154,20 @@ export default class Ant{
                 let averageX = 0;
                 let averageY = 0;
 
-                for(let index = 0; index < trails.length; index++){
-                    let target = this.normalize(trails[index].posX - this.posX, trails[index].posY - this.posY);
-                    if(trails[index].carryingFood && this.seeingTrailDst * this.seeingTrailDst >= this.distance(trails[index].posX, trails[index].posY, this.posX, this.posY) && this.withinAngle(this.dir, target, this.angleOfView / 2)){
-                        countingTrails++;
+                for(let index = 0; index < trails[indexOfBase].length; index++){
+                    let target = this.normalize(trails[indexOfBase][index].posX - this.posX, trails[indexOfBase][index].posY - this.posY);
+                    if(trails[indexOfBase][index].carryingFood && this.seeingDistance * this.seeingDistance >= this.distance(trails[indexOfBase][index].posX, trails[indexOfBase][index].posY, this.posX, this.posY) && this.withinAngle(this.dir, target, this.angleOfView / 2)){
+                        if(!this.checkIfBlockedVision(target)){
+                            countingTrails++;
 
-                        averageX += trails[index].posX - this.posX;
-                        averageY += trails[index].posY - this.posY;
+                            averageX += trails[indexOfBase][index].posX - this.posX;
+                            averageY += trails[indexOfBase][index].posY - this.posY;
                         
-                        this.busy = true;
+                            this.busy = true;
+                        }
                     }
+
+                    if(countingTrails == 4) break;
                 }
 
                 if(countingTrails > 0){
@@ -177,32 +186,38 @@ export default class Ant{
         }
     }
 
-    checkForHomePheronomes(){
+    checkForHomePheronomes(indexOfBase){
         if(this.carryingFood){
             let target = this.normalize(this.positionOfBase.posX - this.posX, this.positionOfBase.posY - this.posY);
-            if(this.fieldOfView * this.fieldOfView >= this.distance(this.positionOfBase.posX, this.positionOfBase.posY, this.posX, this.posY) && this.withinAngle(this.dir, target, this.angleOfView / 2)){
-                this.dir.x = this.positionOfBase.posX - this.posX;
-                this.dir.y = this.positionOfBase.posY - this.posY;
+            if(this.seeingDistance * this.seeingDistance >= this.distance(this.positionOfBase.posX, this.positionOfBase.posY, this.posX, this.posY) && this.withinAngle(this.dir, target, this.angleOfView / 2)){
+                if(!this.checkIfBlockedVision(target)){
+                    this.dir.x = this.positionOfBase.posX - this.posX;
+                    this.dir.y = this.positionOfBase.posY - this.posY;
 
-                this.dir = this.normalize(this.dir.x, this.dir.y);
-                this.busy = true;
+                    this.dir = this.normalize(this.dir.x, this.dir.y);
+                    this.busy = true;
+                }
+                
             }else if(!this.busy){
                 let countingTrails = 0;
                 let averageX = 0;
                 let averageY = 0;
                 
 
-                for(let index = 0; index < trails.length; index++){
-                    target = this.normalize(trails[index].posX - this.posX, trails[index].posY - this.posY);
-                    if(!trails[index].carryingFood && this.seeingTrailDst * this.seeingTrailDst >= this.distance(trails[index].posX, trails[index].posY, this.posX, this.posY) && this.withinAngle(this.dir, target, this.angleOfView / 2)){
+                for(let index = 0; index < trails[indexOfBase].length; index++){
+                    target = this.normalize(trails[indexOfBase][index].posX - this.posX, trails[indexOfBase][index].posY - this.posY);
+                    if(!trails[indexOfBase][index].carryingFood && this.seeingDistance * this.seeingDistance >= this.distance(trails[indexOfBase][index].posX, trails[indexOfBase][index].posY, this.posX, this.posY) && this.withinAngle(this.dir, target, this.angleOfView / 2)){
+                        if(!this.checkIfBlockedVision(target)){
+                            countingTrails++;
 
-                        countingTrails++;
-
-                        averageX += trails[index].posX - this.posX;
-                        averageY += trails[index].posY - this.posY;
+                            averageX += trails[indexOfBase][index].posX - this.posX;
+                            averageY += trails[indexOfBase][index].posY - this.posY;
                         
-                        this.busy = true;
+                            this.busy = true;
+                        }
+                        
                     }
+                    if(countingTrails == 4) break;
                 }
 
                 if(countingTrails > 0){
@@ -238,15 +253,38 @@ export default class Ant{
     }
 
     checkForObstacle(){
-        
+        let futureX = Math.ceil(this.posX + this.dir.x * this.speed * this.distanceToObstacle);
+        let futureY = Math.ceil(this.posY + this.dir.y * this.speed * this.distanceToObstacle);
+
+        if(this.checkIfHitObstacle(futureX, futureY)){
+            this.dir.x *= -1;
+            this.dir.y *= -1;
+            this.canBounce = false;
+        }else{
+            this.canBounce = true;
+        }
     }
 
-    checkIfHitObstacle(x,y){
-        let index = (x + y * canvas.width) * 4;
+    checkIfBlockedVision(target){
+        for(let raycast = 5; raycast < this.seeingDistance; raycast += 5){
+            if(this.checkIfHitObstacle(target.x * raycast, target.y * raycast)){
+                
+                console.log("blocked");
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    checkIfHitObstacle(futureX,futureY){
+        let index = (futureX + futureY * canvas.width) * 4;
 
         if(territory.data[index] == 255 &&  territory.data[index + 1] == 255 && territory.data[index + 2] == 255){
-            console.log("obstacle");
-            return;
+            // console.log("obstacle");
+            // ctx.fillStyle = "black";
+            // ctx.fillRect(futureX - 10, futureY - 10, 20, 20);
+            return true;
         }else{
             return false;
         }

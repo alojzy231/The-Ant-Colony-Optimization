@@ -11,7 +11,7 @@ export default class AntColony{
         ants.push([]);
         trails.push([]);
         for(let index = 0; index < numberOfAntsPerColony; index++){
-            ants[ants.length - 1].push(new Ant(this.posX,this.posY,this.radius, ants.length - 1));
+            ants[ants.length - 1].push(new Ant(this.posX,this.posY,this.radius));
         }
     }
 

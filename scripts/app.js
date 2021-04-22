@@ -5,18 +5,18 @@ import Ants from './ant.js';
 import {drawTrail} from './trail.js';
 import {brushHover} from './mouseModes.js'
 
-const maxFrameRate = 45;
+const maxFrameRate = 100;
 const minFrameRate = 1;
 
 export const detailsOfTerritory = 0.006;
 
-export const radiusOfAntColony = 15;
-export const radiusOfFoodSource = 10;
+export const radiusOfAntColony = 25;
+export const radiusOfFoodSource = 20;
 
 export const maxAmountOfAntColonies = 1;
 export let antColonies = [];
 
-export const numberOfAntsPerColony = 2;
+export const numberOfAntsPerColony = 50;
 export let ants = [];
 
 export let trails = [];

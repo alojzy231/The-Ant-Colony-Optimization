@@ -7,7 +7,7 @@ export function drawTrail(x, y, size, food){
         ctx.fillStyle = "red";
     }
     
-    // ctx.globalAlpha = 0.5;
+    ctx.globalAlpha = 0.5;
     ctx.fillRect(x, y, size, size);
-    // ctx.globalAlpha = 1.0;
+    ctx.globalAlpha = 1.0;
 }
