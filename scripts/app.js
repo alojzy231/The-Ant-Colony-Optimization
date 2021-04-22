@@ -1,4 +1,6 @@
 import * as canvasModule from './canvas.js';
+import {drawTerritory, drawTerritoryFirstTime} from './territory.js'
+import AntColonies from './antColony.js';
 import Ants from './ant.js';
 import {drawTrail} from './trails.js';
 import {brushHover} from './mouseModes.js'
@@ -6,8 +8,16 @@ import {brushHover} from './mouseModes.js'
 const maxFrameRate = 45;
 const minFrameRate = 1;
 
-export const numberOfAnts = 400;
-let ants = [];
+export const detailsOfTerritory = 0.006;
+
+export const radiusOfAntColony = 15;
+export const radiusOfFoodSource = 10;
+
+export const maxAmountOfAntColonies = 1;
+export let antColonies = [];
+
+export const numberOfAntsPerColony = 100;
+export let ants = [];
 
 export let trails = [];
 export const maxAmountOfTrails = 7;
@@ -30,9 +40,7 @@ let interval = setInterval(DRAW,1000 / frameRate);
 
     canvasModule.start();
 
-    for(let index = 0; index < numberOfAnts; index++){
-        ants.push(new Ants(canvasModule.base.posX, canvasModule.base.posY, canvasModule.base.radius));
-    }
+    drawTerritoryFirstTime();
 })();
 
 frameRateNumberInput.addEventListener("change", function(){
@@ -63,21 +71,27 @@ frameRateRangeInput.addEventListener("change", function(){
 });
 
 function DRAW(){
-    canvasModule.drawCanvas(); 
+    drawTerritory();
 
-    for(let index = 0; index < trails.length; index++){
-        drawTrail(trails[index].posX, trails[index].posY, sizeOfTrail, trails[index].carryingFood);
+    for(let indexOfBase = 0; indexOfBase < trails.length; indexOfBase++){
+        for(let index = 0; index < trails[indexOfBase].length; index++){
+            drawTrail(trails[indexOfBase][index].posX, trails[indexOfBase][index].posY, sizeOfTrail, trails[indexOfBase][index].carryingFood);
+        } 
     }
 
-    for(let index = 0; index < numberOfAnts; index++){
-        ants[index].draw();
+    for(let indexOfBase = 0; indexOfBase < ants.length; indexOfBase++){
+        for(let index = 0; index < ants[indexOfBase].length; index++){
+            ants[indexOfBase][index].draw();
+        } 
     }
 
     for(let index = 0; index < foodSources.length; index++){
         foodSources[index].draw();
     }
 
-    canvasModule.base.draw(); 
+    for(let index = 0; index < antColonies.length; index++){
+        antColonies[index].draw();
+    }
 
     brushHover();
 }

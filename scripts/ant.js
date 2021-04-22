@@ -1,9 +1,10 @@
-import {canvas, ctx, base} from './canvas.js'
-import {foodSources, trails, maxAmountOfTrails, numberOfAnts} from './app.js';
+import {canvas, ctx} from './canvas.js';
+import {foodSources, trails, maxAmountOfTrails, numberOfAntsPerColony} from './app.js';
+import {territory} from './territory.js';
 
 export default class Ant{
     
-    constructor(baseX, baseY, radius){
+    constructor(baseX, baseY, radius, baseId){
         this.size = 5;
         this.posX = Math.cos(Math.random()*Math.PI*2)*radius + baseX;
         this.posY = Math.sin(Math.random()*Math.PI*2)*radius + baseY;
@@ -25,6 +26,13 @@ export default class Ant{
         
 
         this.canBounce = true;
+
+        this.positionOfBase = {
+            posX: baseX,
+            posY: baseY,
+        }
+        this.baseRadius = radius;
+        this.baseId = baseId;
     }
 
     normalize(_x,_y){
@@ -97,7 +105,7 @@ export default class Ant{
     checkForFood(){
         if(!this.carryingFood){
             for(let index = 0; index < foodSources.length; index++){
-            let target = this.normalize(foodSources[index].posX - this.posX, foodSources[index].posY - this.posY);
+            // let target = this.normalize(foodSources[index].posX - this.posX, foodSources[index].posY - this.posY);
             if(foodSources[index].radius * foodSources[index].radius >= this.distance(this.posX, this.posY,foodSources[index].posX, foodSources[index].posY) && this.canBounce){
                     this.carryingFood = true;
                     this.dir.x *= -1;
@@ -112,12 +120,12 @@ export default class Ant{
 
     checkForHome(){
         if(this.carryingFood){
-            if(base.radius * base.radius >= this.distance(base.posX, base.posY, this.posX, this.posY) && this.canBounce){
+            if(this.baseRadius * this.baseRadius >= this.distance(this.positionOfBase.posX, this.positionOfBase.posY, this.posX, this.posY) && this.canBounce){
                 this.carryingFood = false;
                 this.dir.x *= -1;
                 this.dir.y *= -1;
                 this.canBounce = false;
-            }else if((base.radius * base.radius < this.distance(base.posX, base.posY, this.posX, this.posY) && !this.canBounce)){
+            }else if((this.baseRadius * this.baseRadius < this.distance(this.positionOfBase.posX, this.positionOfBase.posY, this.posX, this.posY) && !this.canBounce)){
                 this.canBounce = true;
             }
         }  
@@ -172,10 +180,10 @@ export default class Ant{
 
     checkForHomePheronomes(){
         if(this.carryingFood){
-            let target = this.normalize(base.posX - this.posX, base.posY - this.posY);
-            if(this.fieldOfView * this.fieldOfView >= this.distance(base.posX, base.posY, this.posX, this.posY) && this.withinAngle(this.dir, target, this.angleOfView / 2)){
-                this.dir.x = base.posX - this.posX;
-                this.dir.y = base.posY - this.posY;
+            let target = this.normalize(this.positionOfBase.posX - this.posX, this.positionOfBase.posY - this.posY);
+            if(this.fieldOfView * this.fieldOfView >= this.distance(this.positionOfBase.posX, this.positionOfBase.posY, this.posX, this.posY) && this.withinAngle(this.dir, target, this.angleOfView / 2)){
+                this.dir.x = this.positionOfBase.posX - this.posX;
+                this.dir.y = this.positionOfBase.posY - this.posY;
 
                 this.dir = this.normalize(this.dir.x, this.dir.y);
                 this.busy = true;
@@ -214,20 +222,24 @@ export default class Ant{
     }
 
     makeTrail(){
-        if(trails.length >= maxAmountOfTrails * numberOfAnts) trails.shift();
+        if(trails[this.baseId].length >= maxAmountOfTrails * numberOfAntsPerColony) trails[this.baseId].shift();
         if(!this.carryingFood){
-            trails.push({
+            trails[this.baseId].push({
                 posX: this.posX,
                 posY: this.posY,
                 carryingFood: false,
             })
         }else{
-            trails.push({
+            trails[this.baseId].push({
                 posX: this.posX,
                 posY: this.posY,
                 carryingFood: true,
             })
         }
+    }
+
+    checkForObstacle(x,y){
+
     }
 };
 

@@ -1,10 +1,10 @@
 import {ctx} from './canvas.js';
 
 export default class FoodSource{
-    constructor(x,y){
+    constructor(x,y, radius){
         this.posX = x;
         this.posY = y;
-        this.radius = 15;
+        this.radius = radius;
         this.color = "green";
     }
 

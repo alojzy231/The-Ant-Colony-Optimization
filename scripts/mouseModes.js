@@ -1,4 +1,5 @@
-import {foodSources, maxAmountOfFoodSources} from './app.js';
+import {antColonies, maxAmountOfAntColonies,ants,foodSources, maxAmountOfFoodSources, radiusOfFoodSource, radiusOfAntColony} from './app.js';
+import AntColony from './antColony.js'
 import FoodSource from './foodSource.js';
 import {ctx} from './canvas.js';
 
@@ -13,24 +14,21 @@ const canvas = document.getElementById("canvas");
 let boundaries = canvas.getBoundingClientRect();
 
 const foodSourceMode = document.getElementById("food-source");
-const drawObstaclesMode = document.getElementById("draw-obstacles");
-
-const brushSize = 20;
-const brushLineWidth = 5;
+const baseMode = document.getElementById("base");
 
 foodSourceMode.addEventListener("click", function(){
     mouseMode = "foodSource";
     console.log(mouseMode);
 
     foodSourceMode.className = "pressed";
-    drawObstaclesMode.className = "";
+    baseMode.className = "";
 });
 
-drawObstaclesMode.addEventListener("click", function(){
-    mouseMode = "drawObstacles";
+baseMode.addEventListener("click", function(){
+    mouseMode = "antColony";
     console.log(mouseMode);
 
-    drawObstaclesMode.className = "pressed";
+    baseMode.className = "pressed";
     foodSourceMode.className = "";
 });
 
@@ -43,7 +41,7 @@ canvas.addEventListener("pointermove", function(e){
 });
 
 canvas.addEventListener("click", function(e){
-    if(mouseMode == "foodSource"){
+    if(mouseMode === "foodSource"){
         if(e.ctrlKey){
             for(let index = 0; index < foodSources.length; index++){
                 let dst = (mousePos.x - foodSources[index].posX) * (mousePos.x - foodSources[index].posX) + (mousePos.y - foodSources[index].posY) * (mousePos.y - foodSources[index].posY);
@@ -54,17 +52,35 @@ canvas.addEventListener("click", function(e){
             }
         }else{
             if(foodSources.length <= maxAmountOfFoodSources){
-                foodSources.push(new FoodSource(mousePos.x, mousePos.y));
+                foodSources.push(new FoodSource(mousePos.x, mousePos.y, radiusOfFoodSource));
+            }
+        }
+    }else if(mouseMode === "antColony"){
+        if(e.ctrlKey){
+            for(let index = 0; index < antColonies.length; index++){
+                let dst = (mousePos.x - antColonies[index].posX) * (mousePos.x - antColonies[index].posX) + (mousePos.y - antColonies[index].posY) * (mousePos.y - antColonies[index].posY);
+                
+                if(antColonies[index].radius * antColonies[index].radius >= dst){
+                    antColonies.splice(index,1);
+                    console.log(ants[index].splice(0,ants[index].length));
+                }
+            }
+        }else{
+            if(antColonies.length <= maxAmountOfAntColonies){
+                antColonies.push(new AntColony(mousePos.x, mousePos.y, radiusOfAntColony));
             }
         }
     }
 });
 
 export function brushHover(){
-    if(mouseMode == "drawObstacles"){
-        ctx.lineWidth = brushLineWidth;
+    if(mouseMode){
+        let brushRadius = (mouseMode == "foodSource") ? radiusOfFoodSource : radiusOfAntColony;
+        ctx.beginPath();
+        ctx.arc(mousePos.x, mousePos.y, brushRadius, 0, Math.PI * 2, true);
+        ctx.closePath();
         ctx.strokeStyle = "white";
-        ctx.strokeRect(mousePos.x - brushSize / 2, mousePos.y - brushSize / 2, brushSize, brushSize)
+        ctx.stroke();
     }
     
 }
