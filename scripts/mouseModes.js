@@ -1,4 +1,4 @@
-import {antColonies, maxAmountOfAntColonies,ants,foodSources, maxAmountOfFoodSources, radiusOfFoodSource, radiusOfAntColony} from './app.js';
+import {antColonies, maxAmountOfAntColonies,ants, trails,foodSources, maxAmountOfFoodSources, radiusOfFoodSource, radiusOfAntColony} from './app.js';
 import AntColony from './antColony.js'
 import FoodSource from './foodSource.js';
 import {ctx} from './canvas.js';
@@ -61,8 +61,10 @@ canvas.addEventListener("click", function(e){
                 let dst = (mousePos.x - antColonies[index].posX) * (mousePos.x - antColonies[index].posX) + (mousePos.y - antColonies[index].posY) * (mousePos.y - antColonies[index].posY);
                 
                 if(antColonies[index].radius * antColonies[index].radius >= dst){
+                    
+                    ants.splice(index, 1);
                     antColonies.splice(index,1);
-                    console.log(ants[index].splice(0,ants[index].length));
+                    trails.splice(index, 1);
                 }
             }
         }else{

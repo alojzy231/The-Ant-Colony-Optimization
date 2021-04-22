@@ -2,7 +2,7 @@ import * as canvasModule from './canvas.js';
 import {drawTerritory, drawTerritoryFirstTime} from './territory.js'
 import AntColonies from './antColony.js';
 import Ants from './ant.js';
-import {drawTrail} from './trails.js';
+import {drawTrail} from './trail.js';
 import {brushHover} from './mouseModes.js'
 
 const maxFrameRate = 45;
@@ -16,7 +16,7 @@ export const radiusOfFoodSource = 10;
 export const maxAmountOfAntColonies = 1;
 export let antColonies = [];
 
-export const numberOfAntsPerColony = 100;
+export const numberOfAntsPerColony = 2;
 export let ants = [];
 
 export let trails = [];
@@ -81,7 +81,7 @@ function DRAW(){
 
     for(let indexOfBase = 0; indexOfBase < ants.length; indexOfBase++){
         for(let index = 0; index < ants[indexOfBase].length; index++){
-            ants[indexOfBase][index].draw();
+            ants[indexOfBase][index].draw(indexOfBase);
         } 
     }
 

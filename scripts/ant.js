@@ -4,7 +4,7 @@ import {territory} from './territory.js';
 
 export default class Ant{
     
-    constructor(baseX, baseY, radius, baseId){
+    constructor(baseX, baseY, radius){
         this.size = 5;
         this.posX = Math.cos(Math.random()*Math.PI*2)*radius + baseX;
         this.posY = Math.sin(Math.random()*Math.PI*2)*radius + baseY;
@@ -32,7 +32,6 @@ export default class Ant{
             posY: baseY,
         }
         this.baseRadius = radius;
-        this.baseId = baseId;
     }
 
     normalize(_x,_y){
@@ -51,17 +50,17 @@ export default class Ant{
         this.dir.y = Math.sin(angle) * x + Math.cos(angle) * y;
     }
 
-    draw(){
+    draw(indexOfBase){
         ctx.fillStyle = "black";
         ctx.fillRect(this.posX, this.posY, this.size, this.size);
-        this.move();
+        this.move(indexOfBase);
     }
 
     distance(x1,y1,x2,y2){
         return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
     }
 
-    move(){
+    move(indexOfBase){
         if(this.carryingFood){
             this.checkForHomePheronomes();
         }else{
@@ -86,7 +85,7 @@ export default class Ant{
 
         if(this.countingMoves >= this.movesBetweenTrails){
             this.countingMoves = 0;
-            this.makeTrail();
+            this.makeTrail(indexOfBase);
         }else{
             this.countingMoves++;
         }
@@ -221,16 +220,16 @@ export default class Ant{
         }
     }
 
-    makeTrail(){
-        if(trails[this.baseId].length >= maxAmountOfTrails * numberOfAntsPerColony) trails[this.baseId].shift();
+    makeTrail(indexOfBase){
+        if(trails[indexOfBase].length >= maxAmountOfTrails * numberOfAntsPerColony) trails[indexOfBase].shift();
         if(!this.carryingFood){
-            trails[this.baseId].push({
+            trails[indexOfBase].push({
                 posX: this.posX,
                 posY: this.posY,
                 carryingFood: false,
             })
         }else{
-            trails[this.baseId].push({
+            trails[indexOfBase].push({
                 posX: this.posX,
                 posY: this.posY,
                 carryingFood: true,
@@ -238,7 +237,19 @@ export default class Ant{
         }
     }
 
-    checkForObstacle(x,y){
+    checkForObstacle(){
+        
+    }
+
+    checkIfHitObstacle(x,y){
+        let index = (x + y * canvas.width) * 4;
+
+        if(territory.data[index] == 255 &&  territory.data[index + 1] == 255 && territory.data[index + 2] == 255){
+            console.log("obstacle");
+            return;
+        }else{
+            return false;
+        }
 
     }
 };
