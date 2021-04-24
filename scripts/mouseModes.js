@@ -3,7 +3,7 @@ import AntColony from './antColony.js'
 import FoodSource from './foodSource.js';
 import {ctx} from './canvas.js';
 
-export let mouseMode = "none";
+export let mouseMode = "antColony";
 
 let mousePos = {
     x: 0,
@@ -59,7 +59,7 @@ canvas.addEventListener("click", function(e){
         if(e.ctrlKey){
             for(let index = 0; index < antColonies.length; index++){
                 let dst = (mousePos.x - antColonies[index].posX) * (mousePos.x - antColonies[index].posX) + (mousePos.y - antColonies[index].posY) * (mousePos.y - antColonies[index].posY);
-                
+                console.log(mousePos);
                 if(antColonies[index].radius * antColonies[index].radius >= dst){
                     
                     ants.splice(index, 1);

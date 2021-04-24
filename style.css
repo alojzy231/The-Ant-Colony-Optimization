@@ -1,19 +1,46 @@
-*{
-    margin: 2px;
+body{
+    margin:0;
+    background-color: rgb(122, 118, 118);
+    
+    font-size: 90%;
+}
+
+#properties{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#title{
+    margin:0;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    text-align: center;
+    width: 100%;
+    background-color: rgb(124, 39, 39);
 }
 
 #inputs{
-    margin: 5px;
+    margin: 15px;
+    
 }
 
+#framerate-number, #ants-number{
+    width:150px;
+}
 
 ul{
     display: flex;
 }
 li{
+    margin-right: 20px;
+    font-weight: bold;
+    text-align: center;
     list-style: none;
     padding: 5px;
     background-color: rgb(240, 61, 61);
+    min-width: 100px;
+    width: 10vw;
 }
 
 li:hover{
@@ -23,4 +50,9 @@ li:hover{
 
 .pressed{
     background-color: rgb(201, 66, 66);
+}
+
+canvas{
+    margin:0;
+    margin-left: 20px;
 }

@@ -10,18 +10,21 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="inputs">
-        <label for="framerate">Speed: </label>
-        <input type="range" name="framerate" id="framerate-range" value="100">
-        <input type="number"  id="framerate-number" value="30">
-        <br>
+    <h1 id="title">THE ANT COLONY OPTIMIZATION</h1>
+    <div id="properties">
+        <div id="inputs">
+            <label for="framerate">Speed: </label>
+            <input type="range" name="framerate" id="framerate-range" value="30" max="60" min="1">
+            <input type="number" name="framerate" id="framerate-number" value="30" disabled>
+        </div>
+        <div id="modes">
+            <ul>
+                <li id="food-source" title="click left mouse button to spawn a food source &#x0a;click left mouse button + ctrl to delete it">Food source</li>
+                <li id="base" class="pressed" title="click left mouse button to spawn an ant colony &#x0a;click left mouse button + ctrl to delete it">Ant Colony</li>
+            </ul>
+        </div>
     </div>
-    <div id="modes">
-        <ul>
-            <li id="food-source" title="click left mouse button to spawn a food source &#x0a;click left mouse button + ctrl to delete it">Food source</li>
-            <li id="base" title="click left mouse button to spawn an ant colony &#x0a;click left mouse button + ctrl to delete it">Ant Colony</li>
-        </ul>
-    </div>
+    
     <canvas id="canvas">
 
     </canvas>

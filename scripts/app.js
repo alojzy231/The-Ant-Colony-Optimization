@@ -1,14 +1,10 @@
 import * as canvasModule from './canvas.js';
 import {drawTerritory, drawTerritoryFirstTime} from './territory.js'
-import AntColonies from './antColony.js';
-import Ants from './ant.js';
 import {drawTrail} from './trail.js';
 import {brushHover} from './mouseModes.js'
+import Ant from './ant.js';
 
-const maxFrameRate = 100;
-const minFrameRate = 1;
-
-export const detailsOfTerritory = 0.006;
+export const detailsOfTerritory = 0.0008;
 
 export const radiusOfAntColony = 25;
 export const radiusOfFoodSource = 20;
@@ -16,7 +12,7 @@ export const radiusOfFoodSource = 20;
 export const maxAmountOfAntColonies = 1;
 export let antColonies = [];
 
-export const numberOfAntsPerColony = 50;
+export let numberOfAntsPerColony;
 export let ants = [];
 
 export let trails = [];
@@ -30,42 +26,22 @@ const frameRateNumberInput = document.getElementById('framerate-number');
 const frameRateRangeInput = document.getElementById('framerate-range'); 
 
 let frameRate = frameRateNumberInput.value;
+numberOfAntsPerColony = 200;
 
 let interval = setInterval(DRAW,1000 / frameRate);
 
 (function(){
     console.log("start");
-    frameRateRangeInput.max = maxFrameRate;
-    frameRateRangeInput.min = minFrameRate;
 
     canvasModule.start();
 
     drawTerritoryFirstTime();
 })();
 
-frameRateNumberInput.addEventListener("change", function(){
-    let val = frameRateNumberInput.value;
-    
-    if(val > maxFrameRate){
-        val = maxFrameRate;
-        frameRateNumberInput.value = maxFrameRate;
-    }else if(val < minFrameRate){
-        val = minFrameRate;
-        frameRateNumberInput.value = minFrameRate;
-    }
-    frameRateRangeInput.value=val;
-    
-    frameRate = frameRateNumberInput.value;
-    clearInterval(interval);
-    interval = setInterval(DRAW,1000 / frameRate);
-});
-
 frameRateRangeInput.addEventListener("change", function(){
-    let val = frameRateRangeInput.value;
-
-    frameRateNumberInput.value=val;
+    frameRateNumberInput.value = frameRateRangeInput.value;
     
-    frameRate = frameRateNumberInput.value;
+    frameRate = frameRateRangeInput.value;
     clearInterval(interval);
     interval = setInterval(DRAW,1000 / frameRate);
 });

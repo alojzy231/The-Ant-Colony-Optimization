@@ -53,7 +53,7 @@ export default class Ant{
 
     draw(indexOfBase){
         ctx.fillStyle = "black";
-        ctx.fillRect(this.posX, this.posY, this.size, this.size);
+        ctx.fillRect(this.posX - this.size / 2, this.posY - this.size / 2, this.size, this.size);
         this.move(indexOfBase);
     }
 
@@ -62,6 +62,8 @@ export default class Ant{
     }
 
     move(indexOfBase){
+        
+
         if(this.carryingFood){
             this.checkForHomePheronomes(indexOfBase);
         }else{
@@ -71,10 +73,14 @@ export default class Ant{
         this.checkForFood();
         this.checkForHome();
 
+
         this.randomAngle(this.dir.x, this.dir.y, this.currentAngleOffset);
         this.dir = this.normalize(this.dir.x, this.dir.y);
 
         this.checkForObstacle();
+
+        // ctx.beginPath();
+        // ctx.moveTo(this.posX, this.posY);
 
         this.posX += this.dir.x * this.speed;
         this.posY += this.dir.y * this.speed;
@@ -93,8 +99,10 @@ export default class Ant{
         }else{
             this.countingMoves++;
         }
-
-        
+        //Raycasts
+        // ctx.lineTo(this.posX + this.dir.x * 10, this.posY + this.dir.y * 10);
+        // ctx.strokeStyle = "red";
+        // ctx.stroke();
     }
 
     withinAngle(v1, v2, angle){
@@ -158,16 +166,26 @@ export default class Ant{
                     let target = this.normalize(trails[indexOfBase][index].posX - this.posX, trails[indexOfBase][index].posY - this.posY);
                     if(trails[indexOfBase][index].carryingFood && this.seeingDistance * this.seeingDistance >= this.distance(trails[indexOfBase][index].posX, trails[indexOfBase][index].posY, this.posX, this.posY) && this.withinAngle(this.dir, target, this.angleOfView / 2)){
                         if(!this.checkIfBlockedVision(target)){
+                            
                             countingTrails++;
 
                             averageX += trails[indexOfBase][index].posX - this.posX;
                             averageY += trails[indexOfBase][index].posY - this.posY;
                         
                             this.busy = true;
+
+                            //Raycasts
+                            // ctx.beginPath()
+                            // ctx.moveTo(this.posX, this.posY);
+                            // ctx.lineTo(trails[indexOfBase][index].posX, trails[indexOfBase][index].posY);
+                            // ctx.strokeStyle = "green";
+                            // ctx.stroke();
+                        }else{
+                            
                         }
                     }
 
-                    if(countingTrails == 4) break;
+                    if(countingTrails == 10) break;
                 }
 
                 if(countingTrails > 0){
@@ -208,16 +226,29 @@ export default class Ant{
                     target = this.normalize(trails[indexOfBase][index].posX - this.posX, trails[indexOfBase][index].posY - this.posY);
                     if(!trails[indexOfBase][index].carryingFood && this.seeingDistance * this.seeingDistance >= this.distance(trails[indexOfBase][index].posX, trails[indexOfBase][index].posY, this.posX, this.posY) && this.withinAngle(this.dir, target, this.angleOfView / 2)){
                         if(!this.checkIfBlockedVision(target)){
+
+                            
+
                             countingTrails++;
 
                             averageX += trails[indexOfBase][index].posX - this.posX;
                             averageY += trails[indexOfBase][index].posY - this.posY;
                         
                             this.busy = true;
+
+
+                            //Raycasts
+                            // ctx.beginPath()
+                            // ctx.moveTo(this.posX, this.posY);
+                            // ctx.lineTo(trails[indexOfBase][index].posX, trails[indexOfBase][index].posY);
+                            // ctx.strokeStyle = "pink";
+                            // ctx.stroke();
                         }
+                        }else{
+                            
                         
                     }
-                    if(countingTrails == 4) break;
+                    if(countingTrails == 10) break;
                 }
 
                 if(countingTrails > 0){
@@ -257,8 +288,7 @@ export default class Ant{
         let futureY = Math.ceil(this.posY + this.dir.y * this.speed * this.distanceToObstacle);
 
         if(this.checkIfHitObstacle(futureX, futureY)){
-            this.dir.x *= -1;
-            this.dir.y *= -1;
+            this.bounce();
             this.canBounce = false;
         }else{
             this.canBounce = true;
@@ -266,22 +296,22 @@ export default class Ant{
     }
 
     checkIfBlockedVision(target){
-        for(let raycast = 5; raycast < this.seeingDistance; raycast += 5){
-            if(this.checkIfHitObstacle(target.x * raycast, target.y * raycast)){
-                
-                console.log("blocked");
+        for(let raycast = 1; raycast < this.seeingDistance; raycast += 5){
+            let futureX = Math.ceil(this.posX + (target.x * raycast));
+            let futureY = Math.ceil(this.posY + (target.y * raycast));
+            if(this.checkIfHitObstacle(futureX, futureY)){          
                 return true;
             }
+            // ctx.fillStyle = "black";
+            // ctx.fillRect(this.posX + (target.x * raycast), this.posY + (target.y * raycast) , 1, 1);
         }
-
+        
         return false;
     }
 
     checkIfHitObstacle(futureX,futureY){
         let index = (futureX + futureY * canvas.width) * 4;
-
         if(territory.data[index] == 255 &&  territory.data[index + 1] == 255 && territory.data[index + 2] == 255){
-            // console.log("obstacle");
             // ctx.fillStyle = "black";
             // ctx.fillRect(futureX - 10, futureY - 10, 20, 20);
             return true;
@@ -289,6 +319,20 @@ export default class Ant{
             return false;
         }
 
+    }
+
+    bounce(){
+        // if(this.dir.x > this.dir.y){
+        //     this.dir.x *= -1;
+        // }else if(this.dir.x < this.dir.y){
+        //     this.dir.y *= -1;
+        // }else{
+        //     this.dir.x *= -1;
+        //     this.dir.y *= -1;
+        // }
+
+        this.dir.x *= -1;
+            this.dir.y *= -1;
     }
 };
 
