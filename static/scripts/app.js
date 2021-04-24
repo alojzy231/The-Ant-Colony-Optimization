@@ -12,7 +12,7 @@ export const radiusOfFoodSource = 20;
 export const maxAmountOfAntColonies = 1;
 export let antColonies = [];
 
-export let numberOfAntsPerColony;
+export const numberOfAntsPerColony = 200;
 export let ants = [];
 
 export let trails = [];
@@ -26,7 +26,7 @@ const frameRateNumberInput = document.getElementById('framerate-number');
 const frameRateRangeInput = document.getElementById('framerate-range'); 
 
 let frameRate = frameRateNumberInput.value;
-numberOfAntsPerColony = 200;
+
 
 let interval = setInterval(DRAW,1000 / frameRate);
 

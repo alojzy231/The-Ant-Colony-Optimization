@@ -5,9 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Ant Colony</title>
-    <script type="module" src="scripts/app.js" defer></script>
-    <script type="module" src="scripts/mouseModes.js" defer></script>
-    <link rel="stylesheet" href="style.css">
+    <script type="module" src="{{ url_for('static', filename='scripts/app.js') }}" defer></script>
+    <script type="module" src="{{ url_for('static', filename='scripts/mouseModes.js') }}" defer></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h1 id="title">THE ANT COLONY OPTIMIZATION</h1>
