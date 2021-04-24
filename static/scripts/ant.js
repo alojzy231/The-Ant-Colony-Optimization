@@ -185,7 +185,7 @@ export default class Ant{
                         }
                     }
 
-                    if(countingTrails == 10) break;
+                    if(countingTrails == 4) break;
                 }
 
                 if(countingTrails > 0){
@@ -248,7 +248,7 @@ export default class Ant{
                             
                         
                     }
-                    if(countingTrails == 10) break;
+                    if(countingTrails == 4) break;
                 }
 
                 if(countingTrails > 0){
